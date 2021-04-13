@@ -1,0 +1,8 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+
+    <t:summary href="${it.scanOutputURL}" icon="/plugin/cloudguard-shiftleft/images/topic_shiftleft.svg">
+      <a href="${it.scanOutputURL}">${it.scanReportName}</a>
+    </t:summary>
+</j:jelly>

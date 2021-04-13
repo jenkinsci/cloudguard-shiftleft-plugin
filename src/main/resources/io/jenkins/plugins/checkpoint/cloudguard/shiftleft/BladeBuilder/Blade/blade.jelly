@@ -1,0 +1,32 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
+    <f:entry title="Credentials" field="credentialsId">
+        <c:select/>
+    </f:entry>
+    <f:entry title="Ignore Failure">
+        <f:checkbox field="ignoreFailure"/>
+    </f:entry>
+    <f:entry title="On-Failure Command" >
+        <f:textbox field="onFailureCmd"/>
+    </f:entry>
+    <f:advanced title="General Options" align="left">
+    <f:entry title="Debug">
+        <f:checkbox field="debug"/>
+    </f:entry>
+    <f:entry title="Timeout">
+        <f:number field="timeout"/>
+    </f:entry>
+    <f:entry title="Force Version" >
+        <f:textbox field="forceVersion"/>
+    </f:entry>
+    <f:entry title="Working Directory" >
+        <f:textbox field="directory"/>
+    </f:entry>
+    <f:entry title="CloudGuard Native environment" >
+        <f:textbox field="environment"/>
+    </f:entry>
+    <f:entry title="Auto Update">
+        <f:checkbox field="autoUpdate"/>
+    </f:entry>
+    </f:advanced>
+</j:jelly>

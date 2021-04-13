@@ -1,0 +1,11 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core"
+    xmlns:f="/lib/form"
+    xmlns:l="/lib/layout">
+    <j:set var="instance" value="${instance}"/>
+    <f:section title="Shiftleft Blades">
+        <f:block>
+            <f:repeatableHeteroProperty field="blades" hasHeader="true"/>
+        </f:block>
+    </f:section>
+</j:jelly>
