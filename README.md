@@ -101,6 +101,10 @@ cloned and the credentials we previously created:
 
 ## Image Scanning
 
+Shiftleft _image-scan_ blade scans container images checking for
+vulnerabilities and threats. It includes all the checks previously described in
+the _code-scan_ blade, and adds on top of that vulnerability scanning for OS
+level packages, like `apk`, `dpkg` or `rpm`
 
 ## Shiftleft Results
 
@@ -109,19 +113,10 @@ generate a report for each blade invokation that will be archived as job
 artifacts. When you navigate into the build view, links in the left navigation
 pane as well as in the job results section will take you to the report details:
 
-[Job Results](doc/img/job_results.png)
+![Job Results](doc/img/job_results.png)
 
-
-## Issues
-
-TODO Decide where you're going to host your issues, the default is Jenkins JIRA, but you can also enable GitHub issues,
-If you use GitHub issues there's no need for this section; else add the following line:
-
-Report issues and enhancements in the [Jenkins issue tracker](https://issues.jenkins-ci.org/).
 
 ## Contributing
-
-TODO review the default [CONTRIBUTING](https://github.com/jenkinsci/.github/blob/master/CONTRIBUTING.md) file and make sure it is appropriate for your plugin, if not then add your own one adapted from the base file
 
 Refer to our [contribution guidelines](https://github.com/jenkinsci/.github/blob/master/CONTRIBUTING.md)
 
