@@ -9,11 +9,11 @@
     </parent>
     <groupId>io.jenkins.plugins</groupId>
     <artifactId>cloudguard-shiftleft</artifactId>
-    <version>${revision}${changelist}</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <properties>
         <revision>1.0.0</revision>
-        <changelist></changelist>
+        <changelist />
 
         <!-- Baseline Jenkins version you use to build the plugin. Users must have this version or newer to run. -->
         <jenkins.version>2.235.1</jenkins.version>
