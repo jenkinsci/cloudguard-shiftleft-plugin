@@ -43,7 +43,6 @@ public class ShiftleftBuilderExecutor {
             throw new AbortException("No credentials defined to access CloudGuard");
         }
 
-        List<DomainRequirement> domainRequirements = Collections.emptyList();
         UsernamePasswordCredentials credentials = (UsernamePasswordCredentials) CredentialsProvider.findCredentialById(
                 blade.getCredentialsId(), StandardUsernameCredentials.class, run, Collections.emptyList());
 

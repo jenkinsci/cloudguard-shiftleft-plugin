@@ -13,6 +13,7 @@ import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Proc;
+import hudson.model.Executor;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.ArtifactArchiver;
@@ -30,8 +31,6 @@ public class ShiftleftExecutor {
     FilePath workspace;
     Launcher launcher;
     TaskListener listener;
-    // TODO: Credentials and builder information should be injected into the scanner
-    // object
     UsernamePasswordCredentials credentials;
     Blade blade;
 
@@ -82,18 +81,29 @@ public class ShiftleftExecutor {
 
     public ScanResults execute() throws IOException, InterruptedException {
 
-        final EnvVars env = run.getEnvironment(listener);
         // Create process start and inject required environment variables to interact
         // with CloudGuard
-        // TODO: Extract credentials to specific scanner
         Map<String, String> envVars = Utils.populateCloudGuardEnvMap(credentials);
-        // TODO: If we create new launcher in the ShiftLeftExecutor class, that is the
-        // one we should use
-        Launcher.ProcStarter ps = launcher.launch().pwd(run.getExecutor().getCurrentWorkspace()).envs(envVars);
+        if (run == null){
+            throw new AbortException("Run object is null");
+        }
+        Executor executor = run.getExecutor();
+        if (executor == null){
+            throw new AbortException("Executor object is null");
+        }
+        FilePath currentWorkspace = executor.getCurrentWorkspace();
+        if (currentWorkspace == null){
+            throw new AbortException("Current workspace is null");
+        }
+        Launcher.ProcStarter ps = null;
+        if (launcher == null){
+            throw new AbortException("Launcher is null");
+        }
+        ps = launcher.launch().pwd(currentWorkspace).envs(envVars);
+        if (ps == null){
+            throw new AbortException("Could not initialize process starter");
+        }
         ArgumentListBuilder args = new ArgumentListBuilder();
-        listener.getLogger()
-                .println("Current workspace for proc starter: " + run.getExecutor().getCurrentWorkspace().toString());
-
         args.add("shiftleft");
         args.addTokenized(blade.getGeneralOptions());
         args.add(blade.getBladeName());

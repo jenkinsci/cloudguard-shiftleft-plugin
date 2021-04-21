@@ -59,7 +59,7 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
         private String onFailureCmd;
         private Boolean ignoreFailure;
 
-        private final String DISPLAY_NAME = "CheckPoint Shiftleft";
+        private final static String DISPLAY_NAME = "CheckPoint Shiftleft";
 
         protected StringBuilder generalOptions = new StringBuilder();
 
