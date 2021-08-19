@@ -34,6 +34,8 @@ import j2html.tags.DomContent;
 
 public abstract class SourceGuardReportGenerator extends ReportGenerator {
 
+        protected final static String REPORT_TITLE = "CloudGuard Scan";
+
         public SourceGuardReportGenerator(JsonObject jsonObject) {
                 super(jsonObject);
         }
@@ -41,6 +43,10 @@ public abstract class SourceGuardReportGenerator extends ReportGenerator {
         abstract String getScanHeaderTitle();
 
         abstract String getScanIcon();
+
+        public static String getReportTitle() {
+                return REPORT_TITLE;
+        }
 
         @Override
         public String createHtmlFromScanResults() {
@@ -337,7 +343,7 @@ public abstract class SourceGuardReportGenerator extends ReportGenerator {
         }
 
         @Override
-        public void initalizeReportResults() {
+        public void initializeReportResults() {
                 // this.reportResults = new CodeScanReportResults(this.jsonObject);
                 Gson gson = new Gson();
                 this.reportResults = gson.fromJson(this.jsonObject, SourceGuardReportResults.class);

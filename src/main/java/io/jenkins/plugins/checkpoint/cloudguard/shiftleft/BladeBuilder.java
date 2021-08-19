@@ -29,6 +29,7 @@ import hudson.model.queue.Tasks;
 import hudson.security.ACL;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import io.jenkins.cli.shaded.org.apache.commons.lang.StringUtils;
 import io.jenkins.plugins.checkpoint.cloudguard.report.ReportType;
@@ -189,6 +190,98 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
             }
         }
 
+    }
+
+    public static final class IacAssessment extends Blade {
+
+        private final String infrastructureType;
+        private final String path;
+        private final String entryPath;
+        private final String ruleset;
+        private final ReportType reportType;
+
+        private static final String BLADE_NAME = "iac-assessment";
+
+        @Extension
+        public static class DescriptorImpl extends BladeDescriptor {
+            @Override
+            public String getDisplayName() {
+                return "Infra as Code Assessment";
+            }
+
+            public ListBoxModel doFillInfrastructureTypeItems() {
+                ListBoxModel items = new StandardListBoxModel();
+                items.add("Terraform", "Terraform");
+                items.add("AWS Cloud Formation", "Cft");
+                return items;
+            }
+
+            public FormValidation doCheckPath(@QueryParameter String path) {
+                if (path.isEmpty()) {
+                    return FormValidation.error("Path must be provided");
+                }
+                return FormValidation.ok();
+            }
+
+            public FormValidation doCheckRuleset(@QueryParameter String ruleset) {
+                try {
+                    long rulesetVal = Long.parseLong(ruleset);
+                    if (rulesetVal == 0) {
+                        throw new Exception("Ruleset ID can not be 0");
+                    }
+                    return FormValidation.ok();
+                } catch (NumberFormatException ex) {
+                    return FormValidation.error("Ruleset ID number must be provided");
+                } catch (Exception e) {
+                    return FormValidation.error(e.getMessage());
+                }
+            }
+        }
+
+        @DataBoundConstructor
+        public IacAssessment(String infrastructureType, String path, String entryPath, String ruleset) {
+            this.infrastructureType = infrastructureType;
+            this.path = path;
+            this.entryPath = entryPath;
+            this.ruleset = ruleset;
+            this.reportType = ReportType.IAC_ASSESSMENT;
+        }
+
+        public String getInfrastructureType() {
+            return infrastructureType;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public String getEntryPath() {
+            return entryPath;
+        }
+
+        public String getRuleset() {
+            return ruleset;
+        }
+
+        public ReportType getReportType() {
+            return reportType;
+        }
+
+        @Override
+        String getBladeName() {
+            return BLADE_NAME;
+        }
+
+        @Override
+        String getBladeOptions() {
+            return new StringBuilder()
+                .append(" -i=" + infrastructureType)
+                .append(" -p=" + path)
+                .append(StringUtils.isEmpty(entryPath) ? "" : " -E=" + entryPath)
+                .append(" -r=" + ruleset)
+                .append(StringUtils.isEmpty(this.getEnvironment()) ? "" : (" -e=" + this.getEnvironment()))
+                .toString();
+        }
     }
 
     public static final class CodeScan extends Blade {

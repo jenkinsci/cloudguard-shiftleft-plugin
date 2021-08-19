@@ -7,3 +7,5 @@ target/
 .settings/
 work/
 .project
+.idea
+.DS_Store

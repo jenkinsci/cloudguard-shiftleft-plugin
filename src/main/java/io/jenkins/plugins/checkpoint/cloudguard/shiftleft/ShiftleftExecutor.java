@@ -1,24 +1,20 @@
 package io.jenkins.plugins.checkpoint.cloudguard.shiftleft;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.AbortException;
-import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Proc;
 import hudson.model.Executor;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import hudson.tasks.ArtifactArchiver;
 import hudson.util.ArgumentListBuilder;
-import hudson.util.IOUtils;
 import io.jenkins.plugins.checkpoint.Utils;
 import io.jenkins.plugins.checkpoint.cloudguard.shiftleft.BladeBuilder.Blade;
 
@@ -104,6 +100,9 @@ public class ShiftleftExecutor {
             throw new AbortException("Could not initialize process starter");
         }
         ArgumentListBuilder args = new ArgumentListBuilder();
+        // Previous implementation of ps.readStdout().readStderr() and then process.getStdout() didn't work for with >80kb of data
+        ByteArrayOutputStream stdoutStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream stderrStream = new ByteArrayOutputStream();
         args.add("shiftleft");
         args.addTokenized(blade.getGeneralOptions());
         args.add(blade.getBladeName());
@@ -111,18 +110,13 @@ public class ShiftleftExecutor {
         // Need to force the json output in order to parse it
         args.add("-j");
 
-        ps.cmds(args);
-        ps.stdin(null);
-        ps.readStdout().readStderr();
+        ps.cmds(args).stdin(null).stdout(stdoutStream).stderr(stderrStream);
 
-        int status;
-        String stdout;
-        String stderr;
         Proc process = ps.start();
-        status = process.join();
+        int status = process.join();
 
-        stdout = readProcessIntoString(process, "UTF-8", false);
-        stderr = readProcessIntoString(process, "UTF-8", true);
+        String stdout = stdoutStream.toString();
+        String stderr = stderrStream.toString();
         ScanResults scanResults = new ScanResults(stdout, stderr, status);
         // Execute "on-failure command"
         if (scanResults.getStatus() != 0 && ! blade.getOnFailureCmd().isEmpty()) {
@@ -138,16 +132,4 @@ public class ShiftleftExecutor {
         }
         return scanResults;
     }
-
-    @SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "earlier readStderr()/readStdout() call prevents null return")
-    private static String readProcessIntoString(Proc process, String encoding, boolean useStderr)
-            throws IOException, UnsupportedEncodingException {
-        if (useStderr) {
-            /* process.getStderr reference is the findbugs warning to be suppressed */
-            return IOUtils.toString(process.getStderr(), encoding);
-        }
-        /* process.getStdout reference is the findbugs warning to be suppressed */
-        return IOUtils.toString(process.getStdout(), encoding);
-    }
-
 }

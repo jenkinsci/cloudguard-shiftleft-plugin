@@ -15,21 +15,16 @@ public abstract class ReportGenerator {
 
     protected ReportResults reportResults;
     protected final JsonObject jsonObject;
-    protected final static String REPORT_TITLE = "CloudGuard Scan";
 
     public ReportGenerator(JsonObject jsonObject) {
         this.jsonObject = jsonObject;
-        this.initalizeReportResults();
+        this.initializeReportResults();
     }
 
-    public abstract void initalizeReportResults();
+    public abstract void initializeReportResults();
 
     public ReportResults getReportResults() {
         return reportResults;
-    }
-
-    public static String getReportTitle() {
-            return REPORT_TITLE;
     }
 
     public abstract String createHtmlFromScanResults();
