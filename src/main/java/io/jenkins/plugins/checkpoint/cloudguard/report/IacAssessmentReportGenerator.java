@@ -98,9 +98,11 @@ public class IacAssessmentReportGenerator extends ReportGenerator {
                 div().withClass("spacer"),
                 div((b("Summary:")).withClass("scan-header-row scan-header-details")),
                 div(join(
-                        div(join(b("Passed:"), span(ir.getStats().getPassed().toString()).withClass("scan-header-value"))).withClass("scan-header-row scan-header-details"),
-                        div(join(b("Failed:"), span(ir.getStats().getFailed().toString()).withClass("scan-header-value"))).withClass("scan-header-row scan-header-details"),
-                        div(join(b("Error:"), span(ir.getStats().getError().toString()).withClass("scan-header-value"))).withClass("scan-header-row scan-header-details"),
+                        div(join(b("Passed Rules:"), span(ir.getStats().getPassed().toString()).withClass("scan-header-value"))).withClass("scan-header-row scan-header-details"),
+                        div(join(b("Failed Rules:"), span(ir.getStats().getFailed().toString()).withClass("scan-header-value"))).withClass("scan-header-row scan-header-details"),
+                        div(join(b("Failed Tests:"), span(ir.getStats().getFailedTests().toString()).withClass("scan-header-value"))).withClass("scan-header-row scan-header-details"),
+                        div(join(b("Failed Entities:"), span(ir.getStats().getFailedEntities().toString()).withClass("scan-header-value"))).withClass("scan-header-row scan-header-details"),
+                        div(join(b("Errors:"), span(ir.getStats().getError().toString()).withClass("scan-header-value"))).withClass("scan-header-row scan-header-details"),
                         div(join(b("Excluded Tests:"), span(ir.getStats().getExcludedTests().toString()).withClass("scan-header-value"))).withClass("scan-header-row scan-header-details"),
                         div(join(b("Excluded Failed Tests:"), span(ir.getStats().getExcludedFailedTests().toString()).withClass("scan-header-value"))).withClass("scan-header-row scan-header-details"),
                         div(join(b("Excluded Rules:"), span(ir.getStats().getExcludedRules().toString()).withClass("scan-header-value"))).withClass("scan-header-row scan-header-details")
