@@ -29,6 +29,7 @@ import hudson.model.queue.Tasks;
 import hudson.security.ACL;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import io.jenkins.cli.shaded.org.apache.commons.lang.StringUtils;
 import io.jenkins.plugins.checkpoint.cloudguard.report.ReportType;
@@ -66,6 +67,8 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
         abstract String getBladeName();
 
         abstract String getBladeOptions();
+
+        abstract boolean isScanResultByExitCode();
 
         abstract ReportType getReportType();
 
@@ -191,6 +194,138 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
 
     }
 
+    public static final class IacAssessment extends Blade {
+
+        private final String infrastructureType;
+        private final String path;
+        private final String entryPath;
+        private final Long ruleset;
+        private final ReportType reportType;
+        private final String severityLevel;
+        private final Integer severityThreshold;
+
+        private static final String BLADE_NAME = "iac-assessment";
+
+        @Extension
+        public static class DescriptorImpl extends BladeDescriptor {
+            @Override
+            public String getDisplayName() {
+                return "Infrastructure as Code Assessment";
+            }
+
+            public Integer getDefaultSeverityThreshold() {
+                return 1;
+            }
+
+            public String getDefaultSeverityLevel() {
+                return "Low";
+            }
+
+            public ListBoxModel doFillInfrastructureTypeItems() {
+                ListBoxModel infraTypes = new ListBoxModel();
+                infraTypes.add("Terraform");
+                infraTypes.add("AWS Cloud Formation", "Cft");
+                return infraTypes;
+            }
+
+            public ListBoxModel doFillSeverityLevelItems() {
+                ListBoxModel severityLevels = new ListBoxModel();
+                severityLevels.add("Critical");
+                severityLevels.add("High");
+                severityLevels.add("Medium");
+                severityLevels.add("Low");
+                severityLevels.add("Info", "Informational");
+                return severityLevels;
+            }
+
+            public FormValidation doCheckPath(@QueryParameter String path) {
+                if (path.isEmpty()) {
+                    return FormValidation.error("Path must be provided");
+                }
+                return FormValidation.ok();
+            }
+
+            public FormValidation doCheckRuleset(@QueryParameter Long ruleset) {
+                if (ruleset == null) {
+                    return FormValidation.error("Ruleset ID number must be provided");
+                }
+                else if (ruleset == 0) {
+                    return FormValidation.error("Ruleset ID can not be 0");
+                }
+                return FormValidation.ok();
+            }
+
+            public FormValidation doCheckSeverityThreshold(@QueryParameter Long severityThreshold) {
+                if (severityThreshold == null || severityThreshold < 1) {
+                    return FormValidation.error("Severity Threshold must be 1 or higher");
+                }
+                return FormValidation.ok();
+            }
+        }
+
+        @DataBoundConstructor
+        public IacAssessment(String infrastructureType, String path, String entryPath, Long ruleset, String severityLevel, Integer severityThreshold) {
+            this.infrastructureType = infrastructureType;
+            this.path = path;
+            this.entryPath = entryPath;
+            this.ruleset = ruleset;
+            this.severityLevel = severityLevel;
+            this.severityThreshold = severityThreshold;
+            this.reportType = ReportType.IAC_ASSESSMENT;
+        }
+
+        public String getInfrastructureType() {
+            return infrastructureType;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public String getEntryPath() {
+            return entryPath;
+        }
+
+        public Long getRuleset() {
+            return ruleset;
+        }
+
+        public String getSeverityLevel() {
+            return severityLevel;
+        }
+
+        public Integer getSeverityThreshold() {
+            return severityThreshold;
+        }
+
+        public ReportType getReportType() {
+            return reportType;
+        }
+
+        @Override
+        String getBladeName() {
+            return BLADE_NAME;
+        }
+
+        @Override
+        String getBladeOptions() {
+            return new StringBuilder()
+                    .append(" -i=" + infrastructureType)
+                    .append(" -p=" + path)
+                    .append(StringUtils.isEmpty(entryPath) ? "" : " -E=" + entryPath)
+                    .append(" -r=" + ruleset)
+                    .append(StringUtils.isEmpty(getEnvironment()) ? "" : (" -e=" + getEnvironment()))
+                    .append(" -s=" + severityLevel + " ")
+                    .append(" -t=" + severityThreshold + " ")
+                    .toString();
+        }
+
+        @Override
+        boolean isScanResultByExitCode() {
+            return true;
+        }
+    }
+
     public static final class CodeScan extends Blade {
 
         private final String source;
@@ -282,6 +417,11 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
         @Override
         String getBladeOptions() {
             return this.codeScanOptions.toString();
+        }
+
+        @Override
+        boolean isScanResultByExitCode() {
+            return false;
         }
 
     }
@@ -377,6 +517,11 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
         @Override
         String getBladeOptions() {
             return this.imageScanOptions.toString();
+        }
+
+        @Override
+        boolean isScanResultByExitCode() {
+            return false;
         }
     }
 

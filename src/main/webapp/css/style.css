@@ -98,6 +98,14 @@ h1 {
   margin-top: 10px;
 }
 
+.scan-header-value {
+  margin-left: 5px;
+}
+
+.scan-details {
+  margin-left: 20px;
+}
+
 .wrapper-header {
   grid-template-columns: 5% 95%;
   display: grid;
@@ -106,7 +114,6 @@ h1 {
 .spacer {
   margin-top: 50px;
 }
-
 
 .report-section-header {
   font-size: 30px;
@@ -121,6 +128,14 @@ h1 {
 
 .scan-header-row {
   display: flex;
+}
+
+.scan-result-pass {
+  color: darkgreen;
+}
+
+.scan-result-fail {
+  color: darkred;
 }
 
 @media (max-width: 768px){

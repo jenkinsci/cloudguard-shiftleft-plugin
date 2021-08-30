@@ -2,12 +2,10 @@ package io.jenkins.plugins.checkpoint.cloudguard.shiftleft;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
-import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -20,6 +18,7 @@ import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.ArtifactArchiver;
@@ -72,20 +71,33 @@ public class ShiftleftBuilderExecutor {
         FilePath scanResultsPath = initializeResultsDir(run, workspace);
         ShiftleftExecutor executor = new ShiftleftExecutor(run, workspace, launcher, listener, credentials, blade);
         ScanResults scanResults = executor.execute();
-        processScanResults(scanResults.getStdout(), scanResults.getStderr(), listener, scanResultsPath,
+        processScanResults(scanResults, listener, scanResultsPath,
                 scanReportFilename, blade.getReportType());
         archiveArtifacts(run, workspace, launcher, listener, scanResultsPath, scanReportFilename);
-        listener.getLogger().println("Exit code" + String.valueOf(scanResults.getStatus()));
-        switch (scanResults.getStatus()) {
-        case 0:
+        Integer exitCode = scanResults.getStatus();
+        listener.getLogger().println("Exit code: " + exitCode);
+
+        if (blade.isScanResultByExitCode()) {
             listener.getLogger().println("Successful scan.");
-            break;
-        default:
-            if (blade.getIgnoreFailure()) {
-                listener.getLogger().println("Ignoring scan failures");
-                break;
-            } else {
-                throw new AbortException("Failures in Shiftleft Scan");
+            if (exitCode != 0) {
+                if (blade.getIgnoreFailure()) {
+                    listener.getLogger().println("Ignoring scan failures");
+                } else {
+                    run.setResult(Result.FAILURE);
+                }
+            }
+        } else {
+            switch (exitCode) {
+                case 0:
+                    listener.getLogger().println("Successful scan.");
+                    break;
+                default:
+                    if (blade.getIgnoreFailure()) {
+                        listener.getLogger().println("Ignoring scan failures");
+                        break;
+                    } else {
+                        throw new AbortException("Failures in Shiftleft Scan");
+                    }
             }
         }
     }
@@ -106,13 +118,14 @@ public class ShiftleftBuilderExecutor {
         }
     }
 
-    public void processScanResults(String stdout, String stderr, TaskListener listener, FilePath scanResultsPath,
+    public void processScanResults(ScanResults scanResults, TaskListener listener, FilePath scanResultsPath,
             String scanReportFilename, ReportType reportType) throws IOException, InterruptedException, AbortException {
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         FilePath target = new FilePath(scanResultsPath, scanReportFilename);
         JsonParser jp = new JsonParser();
         JsonElement je = null;
+        String stdout = scanResults.getStdout();
         try {
             je = jp.parse(stdout);
         } catch (JsonSyntaxException e) {
@@ -134,7 +147,7 @@ public class ShiftleftBuilderExecutor {
             listener.getLogger().println(stdout);
             throw e;
         }
-        ReportGenerator reportGenerator = ReportGeneratorFactory.getReportGenerator(reportType, jsonObject);
+        ReportGenerator reportGenerator = ReportGeneratorFactory.getReportGenerator(reportType, jsonObject, scanResults.getStatus());
         listener.getLogger().println("Shiftleft Scan Results:");
         listener.getLogger().println(prettyStdout);
         try {
