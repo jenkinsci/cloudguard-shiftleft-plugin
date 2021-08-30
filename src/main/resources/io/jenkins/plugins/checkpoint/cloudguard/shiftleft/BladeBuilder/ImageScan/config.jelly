@@ -38,9 +38,6 @@ THE SOFTWARE.
         <f:entry field="noProxy" title="Do not use proxy settings">
             <f:checkbox />
         </f:entry>
-        <f:entry field="noBlame" title="Do not use Git blame on scanned files">
-            <f:checkbox />
-        </f:entry>
         <f:entry field="ruleset" title="CloudGuard Native ruleset ID">
             <f:textbox />
         </f:entry>
