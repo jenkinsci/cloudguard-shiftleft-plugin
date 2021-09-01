@@ -34,6 +34,9 @@ THE SOFTWARE.
     <f:entry field="entryPath" title="Entry path">
         <f:textbox />
     </f:entry>
+    <f:entry field="variables" title="Variables (Key1=Value1;Key2=Value2;...)">
+        <f:textbox />
+    </f:entry>
     <f:entry field="ruleset" title="CloudGuard Native Ruleset ID">
         <f:number />
     </f:entry>

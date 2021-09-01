@@ -199,6 +199,7 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
         private final String infrastructureType;
         private final String path;
         private final String entryPath;
+        private final String variables;
         private final Long ruleset;
         private final ReportType reportType;
         private final String severityLevel;
@@ -245,6 +246,18 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
                 return FormValidation.ok();
             }
 
+            public FormValidation doCheckVariables(@QueryParameter String variables) {
+                if (variables != null && variables.length() > 0) {
+                    String[] varsArr = variables.split(";");
+                    for (String var : varsArr) {
+                        if (!var.matches("(?<key>[^=]+)=(?<value>[^;]+)")) {
+                            return FormValidation.error("Variables must be in the following format: Key1=Value1;Key2=Value2;...");
+                        }
+                    }
+                }
+                return FormValidation.ok();
+            }
+
             public FormValidation doCheckRuleset(@QueryParameter Long ruleset) {
                 if (ruleset == null) {
                     return FormValidation.error("Ruleset ID number must be provided");
@@ -264,10 +277,11 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
         }
 
         @DataBoundConstructor
-        public IacAssessment(String infrastructureType, String path, String entryPath, Long ruleset, String severityLevel, Integer severityThreshold) {
+        public IacAssessment(String infrastructureType, String path, String entryPath, String variables, Long ruleset, String severityLevel, Integer severityThreshold) {
             this.infrastructureType = infrastructureType;
             this.path = path;
             this.entryPath = entryPath;
+            this.variables = variables;
             this.ruleset = ruleset;
             this.severityLevel = severityLevel;
             this.severityThreshold = severityThreshold;
@@ -284,6 +298,10 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
 
         public String getEntryPath() {
             return entryPath;
+        }
+
+        public String getVariables() {
+            return variables;
         }
 
         public Long getRuleset() {
@@ -309,6 +327,12 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
 
         @Override
         String getBladeOptions() {
+            StringBuilder vars = new StringBuilder("");
+            if (variables != null && variables.length() > 0) {
+                for (String var:variables.split(";")) {
+                    vars.append(" -v=" + var);
+                }
+            }
             return new StringBuilder()
                     .append(" -i=" + infrastructureType)
                     .append(" -p=" + path)
@@ -317,6 +341,7 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
                     .append(StringUtils.isEmpty(getEnvironment()) ? "" : (" -e=" + getEnvironment()))
                     .append(" -s=" + severityLevel + " ")
                     .append(" -t=" + severityThreshold + " ")
+                    .append(vars)
                     .toString();
         }
 
