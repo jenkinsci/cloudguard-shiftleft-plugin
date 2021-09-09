@@ -9,17 +9,20 @@
     </parent>
     <groupId>io.jenkins.plugins</groupId>
     <artifactId>cloudguard-shiftleft</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>${revision}${changelist}</version>
     <packaging>hpi</packaging>
     <properties>
-        <revision>1.0.0</revision>
-        <changelist />
+        <revision>1.1.0</revision>
+        <changelist>-SNAPSHOT</changelist>
 
         <!-- Baseline Jenkins version you use to build the plugin. Users must have this version or newer to run. -->
         <jenkins.version>2.289.3</jenkins.version>
         <java.level>8</java.level>
         <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>    </properties>
     <name>CheckPoint CloudGuard Shiftleft</name>
+    <description>
+        This Jenkins plugin provides a configurable build step to execute Check Point CloudGuard Shiftleft CLI.
+    </description>
     <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
 
     <dependencyManagement>
