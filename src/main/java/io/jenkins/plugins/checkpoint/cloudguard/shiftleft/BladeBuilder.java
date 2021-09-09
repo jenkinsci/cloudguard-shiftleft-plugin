@@ -230,12 +230,12 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
             this.codeScanOptions = new StringBuilder();
             codeScanOptions.append(StringUtils.isEmpty(source) ? "" : ("-s=" + source + " "))
                     .append(StringUtils.isEmpty(exclude) ? "" : ("-x=" + exclude + " "))
-                    .append(noCache == null ? "" : ("-nc=" + noCache.toString() + " "))
-                    .append(noProxy == null ? "" : ("-np=" + noProxy.toString() + " "))
-                    .append(noBlame == null ? "" : ("-nb=" + noBlame.toString() + " "))
-                    .append(StringUtils.isEmpty(ruleset) ? "" : ("-r=" + noBlame.toString() + " "))
+                    .append(noCache == null ? "" : ("-nc=" + noCache + " "))
+                    .append(noProxy == null ? "" : ("-np=" + noProxy + " "))
+                    .append(noBlame == null ? "" : ("-nb=" + noBlame + " "))
+                    .append(StringUtils.isEmpty(ruleset) ? "" : ("-r=" + ruleset + " "))
                     .append(StringUtils.isEmpty(severityLevel) ? "" : ("-sev=" + severityLevel + " "))
-                    .append(severityThreshold == null ? "" : ("-sevt=" + severityLevel.toString() + " "));
+                    .append(severityThreshold == null ? "" : ("-sevt=" + severityThreshold + " "));
         }
 
         public ReportType getReportType() {
@@ -292,7 +292,6 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
         private final String exclude;
         private final Boolean noCache;
         private final Boolean noProxy;
-        private final Boolean noBlame;
         private final String ruleset;
         private final String severityLevel;
         private final Integer severityThreshold;
@@ -311,13 +310,12 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
         }
 
         @DataBoundConstructor
-        public ImageScan(String image, String exclude, Boolean noCache, Boolean noProxy, Boolean noBlame,
+        public ImageScan(String image, String exclude, Boolean noCache, Boolean noProxy,
                 String ruleset, String severityLevel, Integer severityThreshold) {
             this.image = image;
             this.exclude = exclude;
             this.noCache = noCache;
             this.noProxy = noProxy;
-            this.noBlame = noBlame;
             this.ruleset = ruleset;
             this.severityLevel = severityLevel;
             this.severityThreshold = severityThreshold;
@@ -325,12 +323,11 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
             this.imageScanOptions = new StringBuilder();
             imageScanOptions.append(StringUtils.isEmpty(image) ? "" : ("-i=" + image + " "))
                     .append(StringUtils.isEmpty(exclude) ? "" : ("-x=" + exclude + " "))
-                    .append(noCache == null ? "" : ("-nc=" + noCache.toString() + " "))
-                    .append(noProxy == null ? "" : ("-np=" + noProxy.toString() + " "))
-                    .append(noBlame == null ? "" : ("-nb=" + noBlame.toString() + " "))
-                    .append(StringUtils.isEmpty(ruleset) ? "" : ("-r=" + noBlame.toString() + " "))
+                    .append(noCache == null ? "" : ("-nc=" + noCache + " "))
+                    .append(noProxy == null ? "" : ("-np=" + noProxy + " "))
+                    .append(StringUtils.isEmpty(ruleset) ? "" : ("-r=" + ruleset + " "))
                     .append(StringUtils.isEmpty(severityLevel) ? "" : ("-sev=" + severityLevel + " "))
-                    .append(severityThreshold == null ? "" : ("-sevt=" + severityLevel.toString() + " "));
+                    .append(severityThreshold == null ? "" : ("-sevt=" + severityThreshold + " "));
         }
 
         public ReportType getReportType() {
@@ -351,10 +348,6 @@ public class BladeBuilder extends Builder implements SimpleBuildStep {
 
         public Boolean getNoProxy() {
             return noProxy;
-        }
-
-        public Boolean getNoBlame() {
-            return noBlame;
         }
 
         public String getRuleset() {
