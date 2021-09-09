@@ -15,7 +15,7 @@ composed by three blades:
 
 * _image-scan_: Scans container images for security risks and vulnerabilities
 * _code-scan_: Source code security and visibility into the risk analysis of the project
-* _iac-assessment_: scans Infrastructure-as-code templates (Terraform),
+* _iac-assessment_: Scans Infrastructure-as-code templates,
   enabling DevOps and security teams to identify insecure configurations
 
 ## Getting started
@@ -106,6 +106,11 @@ vulnerabilities and threats. It includes all the checks previously described in
 the _code-scan_ blade, and adds on top of that vulnerability scanning for OS
 level packages, like `apk`, `dpkg` or `rpm`
 
+## Infrastructure as Code Assessment
+
+Shiftleft _iac-assessment_ blade scans Infrastructure-as-code templates (Terraform, AWS CloudFormation),
+enabling DevOps and security teams to identify insecure configurations
+
 ## Shiftleft Results
 
 Once CheckPoint Shiftleft build steps are executed in the job, the plugin will
@@ -114,6 +119,9 @@ artifacts. When you navigate into the build view, links in the left navigation
 pane as well as in the job results section will take you to the report details:
 
 ![Job Results](doc/img/job_results.png)
+
+![Job Results](doc/img/job_results_iac.png)
+
 
 
 ## Contributing
